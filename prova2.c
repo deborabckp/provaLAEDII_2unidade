@@ -6,16 +6,16 @@
 #define MAX_CONTACTS 75
 
 // Estrutura para armazenar um contato
-typedef struct Contact {
-    char name[50];
-    char phone[20];
-    struct Contact *next;
-} Contact;
+typedef struct contatos {
+    char Nome[50];
+    char telefone[20];
+    struct contatos *proxi;
+} contatos;
 
 // Estrutura para a tabela hash
-typedef struct HashTable {
-    Contact *table[HASH_SIZE];
-} HashTable;
+typedef struct TabelaHash {
+    contatos *tabela[HASH_SIZE];
+} TabelaHash;
 
 // Função de hash simples
 unsigned int hash(const char *str) {
@@ -29,62 +29,62 @@ unsigned int hash(const char *str) {
 }
 
 // Função para inserir um contato na tabela hash
-void insertContact(HashTable *hashTable, const char *name, const char *phone) {
-    unsigned int index = hash(name);
+void inserir(TabelaHash *tabelahash, const char *Nome, const char *telefone) {
+    unsigned int indice = hash(Nome);
 
-    Contact *newContact = (Contact *)malloc(sizeof(Contact));
-    if (newContact == NULL) {
+    contatos *novocontato = (contatos *)malloc(sizeof(contatos));
+    if (novocontato == NULL) {
         printf("Erro: Falha na alocação de memória\n");
         return;
     }
 
-    strcpy(newContact->name, name);
-    strcpy(newContact->phone, phone);
-    newContact->next = NULL;
+    strcpy(novocontato->Nome, Nome);
+    strcpy(novocontato->telefone, telefone);
+    novocontato->proxi = NULL;
 
     // Insere no início da lista encadeada
-    newContact->next = hashTable->table[index];
-    hashTable->table[index] = newContact;
+    novocontato->proxi = tabelahash->tabela[indice];
+    tabelahash->tabela[indice] = novocontato;
 }
 
 // Função para buscar um contato na tabela hash
-Contact *searchContact(HashTable *hashTable, const char *name) {
-    unsigned int index = hash(name);
-    Contact *current = hashTable->table[index];
+contatos *procurar(TabelaHash *tabelahash, const char *Nome) {
+    unsigned int indice = hash(Nome);
+    contatos *atual = tabelahash->tabela[indice];
 
-    while (current != NULL) {
-        if (strcmp(current->name, name) == 0)
-            return current;
-        current = current->next;
+    while (atual != NULL) {
+        if (strcmp(atual->Nome, Nome) == 0)
+            return atual;
+        atual = atual->proxi;
     }
 
     return NULL; // Contato não encontrado
 }
 
 // Função para imprimir todos os contatos na tabela hash
-void printContacts(HashTable *hashTable) {
+void printcontatos(TabelaHash *tabelahash) {
     printf("Contatos:\n");
     for (int i = 0; i < HASH_SIZE; i++) {
-        Contact *current = hashTable->table[i];
-        while (current != NULL) {
-            printf("Nome: %s, Telefone: %s\n", current->name, current->phone);
-            current = current->next;
+        contatos *atual = tabelahash->tabela[i];
+        while (atual != NULL) {
+            printf("Nome: %s, Telefone: %s\n", atual->Nome, atual->telefone);
+            atual = atual->proxi;
         }
     }
 }
 
 int main() {
-    HashTable hashTable;
-    int option;
-    char name[50], phone[20];
+    TabelaHash tabelahash;
+    int opcao;
+    char Nome[50], telefone[20];
 
     // Inicializa a tabela hash
     for (int i = 0; i < HASH_SIZE; i++)
-        hashTable.table[i] = NULL;
+        tabelahash.tabela[i] = NULL;
 
     // Exemplo de inserção manual de contatos
-    insertContact(&hashTable, "Joao", "123456789");
-    insertContact(&hashTable, "Maria", "987654321");
+    inserir(&tabelahash, "Joao", "123456789");
+    inserir(&tabelahash, "Maria", "987654321");
 
     do {
         printf("\nMenu:\n");
@@ -93,27 +93,27 @@ int main() {
         printf("3. Imprimir contatos\n");
         printf("4. Sair\n");
         printf("Escolha uma opção: ");
-        scanf("%d", &option);
+        scanf("%d", &opcao);
 
-        switch (option) {
+        switch (opcao) {
             case 1:
-                printf("Digite o nome do contato: ");
-                scanf("%s", name);
+                printf("Digite o Nome do contato: ");
+                scanf("%s", Nome);
                 printf("Digite o telefone do contato: ");
-                scanf("%s", phone);
-                insertContact(&hashTable, name, phone);
+                scanf("%s", telefone);
+                inserir(&tabelahash, Nome, telefone);
                 break;
             case 2:
-                printf("Digite o nome do contato que deseja buscar: ");
-                scanf("%s", name);
-                Contact *result = searchContact(&hashTable, name);
-                if (result != NULL)
-                    printf("Telefone de %s: %s\n", name, result->phone);
+                printf("Digite o Nome do contato que deseja buscar: ");
+                scanf("%s", Nome);
+                contatos *resultado = procurar(&tabelahash, Nome);
+                if (resultado != NULL)
+                    printf("Telefone de %s: %s\n", Nome, resultado->telefone);
                 else
                     printf("Contato não encontrado.\n");
                 break;
             case 3:
-                printContacts(&hashTable);
+                printcontatos(&tabelahash);
                 break;
             case 4:
                 printf("Saindo...\n");
@@ -121,7 +121,7 @@ int main() {
             default:
                 printf("Opção inválida.\n");
         }
-    } while (option != 4);
+    } while (opcao != 4);
 
     return 0;
 }
