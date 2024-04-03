@@ -55,7 +55,9 @@ void lerArquivo(Pessoa tabela[]) {
 Pessoa *buscar(Pessoa tabela[], char chave[]) {
     int id = funcaoHashString(chave);
     printf("\nIndice gerada: %d\n",id);
+        //se for maior que zero, significa a tabela contém algum texto
     while (strlen(tabela[id].nome) > 0){
+        //comparando a strinfo com a chave para ver se são iguais
         if(strcmp(tabela[id].nome,chave) == 0){
             return &tabela[id]; 
         }else{
